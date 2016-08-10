@@ -1,5 +1,4 @@
-function [A,x,y] = ej1(x,y)
-
-x = [1,2,3,4,5,6,7,8,9];
-y = [2,1,8,5,7,6,3,4,9];
-A(c,d) = (y.^3)'*x - (x.^3)'*y;
+A = x' * (y.^3) - y' * (x.^3)
+surf(x,y,A)
+sumCols = sum(A);
+sumRows = sum(A');
