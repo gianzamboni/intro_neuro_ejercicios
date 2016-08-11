@@ -1,3 +1,11 @@
-xs = size(x)
-y = ones(1,xs(2)).*y
-ej1
+z = sin(x).*cos(0)
+
+plot(x,z)
+
+maxX=max(x)
+minX=min(x)
+
+hold on
+plot(x,maxX);
+plot(x,minX);
+hold off
