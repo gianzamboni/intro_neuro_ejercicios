@@ -2,8 +2,8 @@ z = sin(x).*cos(0)
 
 plot(x,z)
 
-maxX=max(x)
-minX=min(x)
+maxX=max(z)
+minX=min(z)
 
 hold on
 plot(x,maxX);
