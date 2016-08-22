@@ -1,0 +1,9 @@
+function [vOrdenado] = ejercicio5(a,b)
+    if a < b
+        vOrdenado = [a,b]
+    else
+        vOrdenado = [b,a]
+        
+        
+   swi
+end
