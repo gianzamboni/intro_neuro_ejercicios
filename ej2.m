@@ -1,3 +1,4 @@
+function ejercicio1(x)
 z = sin(x).*cos(0)
 
 plot(x,z)
@@ -12,3 +13,4 @@ hold on
 plot(x(indiceZmax),maxZ, 'r*');
 plot(x(indiceZmin),minZ,'r*');
 hold off
+end
