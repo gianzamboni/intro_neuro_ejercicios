@@ -9,7 +9,6 @@ white = WhiteIndex(wPtr);
 gray = [128 128 128];
 
 middlePointY = rect(3)/2;
-quarterPointY = middlePointY / 2;
 middlePointX = rect(4)/2;
 
 files = dir('Imagenes');  % Conseguimos todos los archivos del directorio
@@ -42,7 +41,7 @@ while(counter < 1)
     title = imread('titulo.jpg', 'jpg');
     
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('PutImage', wPtr, title, [(middlePointX-300) (quarterPointY - 100) (middlePoint+300) (quarterPointY + 100)]);
+    Screen('PutImage', wPtr, title, [(middlePointX-300) 212 (middlePointX+300) 412]);
     Screen('PutImage', wPtr, woman, [220 412 347 649]);
     Screen('PutImage', wPtr, man, [860 412 964 649]);
     Screen(wPtr, 'Flip');
