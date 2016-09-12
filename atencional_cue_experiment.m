@@ -3,14 +3,17 @@ screenNum=0;
 res=[1280 1024];
 clrdepth=32;
 [wPtr,rect]=Screen('OpenWindow',screenNum,0);
-%Colores
+%Colore
 black=BlackIndex(wPtr);
 white = WhiteIndex(wPtr);
 gray = [128 128 128];
 
-middlePointY = rect(3)/2;
+
+rect
+middlePointY = rect(4)/2;
 quarterPointY = middlePointY / 2;
-middlePointX = rect(4)/2;
+middlePointX = rect(3)/2;
+quarterPointX = middlePointX / 2;
 
 files = dir('Imagenes');  % Conseguimos todos los archivos del directorio
 fileSizes = size(files);  % Cantidad de archivos del directorio
@@ -31,8 +34,16 @@ counter = 0;
 
 while(counter < 1)
    
-    infoInstancia = [];    % [ sexo_sujeto, cue, imgD, imgI, responseCue, Rta, Tiempo ]
-    
+    infoInstancia = [];    % [ sexo_sujeto, cue, imgD, imgI, responseCue, Rta, RtaEsperada, Tiempo ]
+                           % sexo_sujeto = 0 mujer
+                           %               1 hombre
+                           % cue =  1 Izquierda
+                           %        2 Neutral
+                           %        3 Derecha
+                           % responseCue =  1 Izquierda
+                           %                2 Derecha
+                           % Rta =          1 Botón izquierdo
+                           %                3 Botón derecho
     
     %%%%%%%%% TODO %%%%%%%%%%%%%
     %%%%% AGREGAR QUE EL USUARIO INDIQUE SEXO %%%%%%%%%%%%%%%%%%
@@ -41,10 +52,12 @@ while(counter < 1)
     man = imread('man.jpg', 'jpg');
     title = imread('titulo.jpg', 'jpg');
     
+    middlePointX
+    middlePointY
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('PutImage', wPtr, title, [(middlePointX-300) (quarterPointY - 100) (middlePoint+300) (quarterPointY + 100)]);
-    Screen('PutImage', wPtr, woman, [220 412 347 649]);
-    Screen('PutImage', wPtr, man, [860 412 964 649]);
+    Screen('PutImage', wPtr, title, [(middlePointX - 300) (quarterPointY - 100) (middlePointX + 300) (quarterPointY + 100)]);
+    Screen('PutImage', wPtr, woman, [(quarterPointX-64) (middlePointY-118) (quarterPointX + 63) (middlePointY + 119)]);
+    Screen('PutImage', wPtr, man, [(3*quarterPointX-52) (middlePointY-118) (3*quarterPointX+52) (middlePointY + 119)]);
     Screen(wPtr, 'Flip');
     
     buttons = [0 0 0];
@@ -53,9 +66,9 @@ while(counter < 1)
     while not(and(any(buttons), gender >= 0))  % Espera repuesta del mouse durante un tiempo acotado, sino sigue.
         [x,y,buttons] = GetMouse(wPtr);
         if any(buttons)
-            if and(and(x > 220, x < 347), and(y > 412, y < 649))
+            if and(and(x > (quarterPointX - 64), x < (quarterPointX + 63)), and(y > (middlePointY-118), y < (middlePointY+119)))
                 gender = 0;
-            elseif and(and(x > 860, x < 964), and(y > 412, y < 649))
+            elseif and(and(x > (3*quarterPointX-52), x < (3*quarterPointX+52)), and(y > (middlePointY-118), y < (middlePointY+119)))
                 gender = 1;
             end
         end
@@ -64,7 +77,7 @@ while(counter < 1)
     infoInstancia = cat(2, infoInstancia, [gender]);
     
     HideCursor;
-    cueCoords = [[320 256 350 286]; [635 507 665 537]; [960 256 990 286] ];   % Defino una matriz con las posiciones del cue atencional. Primer fila: Periferico izquierdo, Segunda fila: Periferico derecho, Tercer fila: Neutral
+    cueCoords = [[(quarterPointX-15) (quarterPointY-15) (quarterPointX+15) (quarterPointY+15)]; [(middlePointX-15) (middlePointY-15) (middlePointX+15) (middlePointY+15)]; [(3*quarterPointX-15) (quarterPointY-15) (3*quarterPointX+15) (quarterPointY+15)] ];   % Defino una matriz con las posiciones del cue atencional. Primer fila: Periferico izquierdo, Segunda fila: Periferico derecho, Tercer fila: Neutral
     fila = randi([1, 3], 1);  %Hacemos random entre 1 y 3 para decidir que cue atencional usar.
     infoInstancia = cat(2, infoInstancia, [fila]);
     
@@ -83,7 +96,7 @@ while(counter < 1)
     imagenRight = imread(cat(2,'Imagenes/', vImg(imgRight,:)), 'jpg');
     imagenLeft = imread(cat(2,'Imagenes/', vImg(imgLeft,:)), 'jpg');
 
-    barCoords = [[570 512 630 532]; [670 512 730 532]];
+    barCoords = [[(middlePointX-60) (middlePointY-10) (middlePointX-20) (middlePointY+10)]; [(middlePointX+20) (middlePointY-10) (middlePointX+60) (middlePointY+10)]];
     ALaIzquierda = randi([1,2], 1);
     infoInstancia = cat(2, infoInstancia, [ALaIzquierda]);
     % 
@@ -96,7 +109,7 @@ while(counter < 1)
     % end
 
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('FillOval', wPtr, black, [640 512 660 532]); %Circulo de fijacion en el centro de la pantalla
+    Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen(wPtr, 'Flip');
 
     tic
@@ -107,7 +120,7 @@ while(counter < 1)
     
 
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('FillOval', wPtr, black, [640 512 660 532]); %Circulo de fijacion en el centro de la pantalla
+    Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen('FillOval', wPtr, black, cueCoords(fila, :)); %Cue perfiferico a la izquierda; Usamos las coordenadas indicadas por fila (el numero random).
     Screen(wPtr, 'Flip');
 
@@ -119,7 +132,7 @@ while(counter < 1)
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('PutImage', wPtr, imagenLeft, [220 412 420 656]);
     Screen('PutImage', wPtr, imagenRight, [860 412 1060 656]);
-    Screen('FillOval', wPtr, black, [640 512 660 532]); %Circulo de fijacion en el centro de la pantalla
+    Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen(wPtr,'Flip');
 
     tic
@@ -129,7 +142,7 @@ while(counter < 1)
 
     %Pantalla de la barra negra
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('FillOval', wPtr, black, [640 512 660 532]); %Circulo de fijacion en el centro de la pantalla
+    Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen('FillRect', wPtr, black, barCoords(ALaIzquierda,:));
     Screen(wPtr,'Flip');
 
@@ -139,7 +152,7 @@ while(counter < 1)
     end
     
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
-    Screen('FillOval', wPtr, black, [640 512 660 532]); %Circulo de fijacion en el centro de la pantalla
+    Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen(wPtr, 'Flip');
     
 
