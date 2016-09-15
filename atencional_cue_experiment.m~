@@ -8,7 +8,7 @@ black=BlackIndex(wPtr);
 white = WhiteIndex(wPtr);
 gray = [128 128 128];
 
-
+correctAnswer = [1 0]
 rect
 middlePointY = rect(4)/2;
 quarterPointY = middlePointY / 2;
@@ -177,6 +177,14 @@ while(counter < 1)
         tic
         pressedButton = find(buttons);
         infoInstancia = cat(2, infoInstancia, pressedButton);
+        
+        %%%%%TODO: AGREGAR REPUESTA ESPERADA AL INFO INSTANCIA
+        if infoInstancia(5) == 1) 
+            infoInstancia = cat(2, infoInstancia, correctAnswer(infoInstancia(4));
+        else
+            infoInstancia = cat(2, infoInstancia, correctAnswer(infoInstancia(3));
+        end
+        
         responseTime = toc;
         infoInstancia = cat(2, infoInstancia, responseTime);
     
