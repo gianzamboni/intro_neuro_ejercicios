@@ -8,8 +8,6 @@ black=BlackIndex(wPtr);
 white = WhiteIndex(wPtr);
 gray = [128 128 128];
 
-correctAnswer = [1 0]
-rect
 middlePointY = rect(4)/2;
 quarterPointY = middlePointY / 2;
 middlePointX = rect(3)/2;
@@ -25,16 +23,15 @@ vImg = [];
 for c = 3:cantArchivos
    vImg = cat(1,vImg,[files(c).name]);
 end
+
+
+fullData = [];
  
 cantImagenes = cantArchivos - 2;  %La cantidad de imagenes del directorio
 
-resultados = [];
-counter = 0;
+counter = 0 ;
 
-
-while(counter < 1)
-   
-    infoInstancia = [];    % [ sexo_sujeto, cue, imgD, imgI, responseCue, Rta, RtaEsperada, Tiempo ]
+infoInstancia = [];    % [ sexo_sujeto, cue, imgD, imgI, responseCue, Rta, RtaEsperada, Tiempo ]
                            % sexo_sujeto = 0 mujer
                            %               1 hombre
                            % cue =  1 Izquierda
@@ -42,18 +39,14 @@ while(counter < 1)
                            %        3 Derecha
                            % responseCue =  1 Izquierda
                            %                2 Derecha
-                           % Rta =          1 Botón izquierdo
-                           %                3 Botón derecho
+                           % Rta =          1 Botón izquierdo - mujer
+                           %                3 Botón derecho - hombre
     
-    %%%%%%%%% TODO %%%%%%%%%%%%%
-    %%%%% AGREGAR QUE EL USUARIO INDIQUE SEXO %%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     woman = imread('woman.jpg', 'jpg');
     man = imread('man.jpg', 'jpg');
     title = imread('titulo.jpg', 'jpg');
-    
-    middlePointX
-    middlePointY
+
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('PutImage', wPtr, title, [(middlePointX - 300) (quarterPointY - 100) (middlePointX + 300) (quarterPointY + 100)]);
     Screen('PutImage', wPtr, woman, [(quarterPointX-64) (middlePointY-118) (quarterPointX + 63) (middlePointY + 119)]);
@@ -74,30 +67,56 @@ while(counter < 1)
         end
     end
     
-    infoInstancia = cat(2, infoInstancia, [gender]);
     
+    
+while(counter < 2)
+    
+   if(and(mod(counter,40) == 0, not(counter==0)))
+        tic
+        while toc < 60
+            ;
+        end
+    end
+    
+   
+    infoInstancia = [gender];
+
     HideCursor;
-    cueCoords = [[(quarterPointX-15) (quarterPointY-15) (quarterPointX+15) (quarterPointY+15)]; [(middlePointX-15) (middlePointY-15) (middlePointX+15) (middlePointY+15)]; [(3*quarterPointX-15) (quarterPointY-15) (3*quarterPointX+15) (quarterPointY+15)] ];   % Defino una matriz con las posiciones del cue atencional. Primer fila: Periferico izquierdo, Segunda fila: Periferico derecho, Tercer fila: Neutral
+    cueCoords = [[(quarterPointX-23) (quarterPointY-23) (quarterPointX+23) (quarterPointY+23)]; [(middlePointX-23) (middlePointY-23) (middlePointX+23) (middlePointY+23)]; [(3*quarterPointX-23) (quarterPointY-23) (3*quarterPointX+23) (quarterPointY+23)] ];   % Defino una matriz con las posiciones del cue atencional. Primer fila: Periferico izquierdo, Segunda fila: Periferico derecho, Tercer fila: Neutral
     fila = randi([1, 3], 1);  %Hacemos random entre 1 y 3 para decidir que cue atencional usar.
     infoInstancia = cat(2, infoInstancia, [fila]);
     
     %Hacemos dos randoms para elegir las dos imagenes que se van a presentar en
     %pantalla
-    imgRight = randi([1, cantImagenes], 1); 
+    imgRight = randi([1, cantImagenes], 1);
     imgLeft = randi([1, cantImagenes], 1); 
-    while(imgLeft == imgRight) 
-      imgLeft = randi([1, cantImagenes], 1);
+   
+    if(imgRight > 16)
+        while imgLeft < 17 
+            imgLeft = randi([1, cantImagenes], 1);
+        end
+    else
+        while imgLeft == imgRight
+            imgLeft = randi([1, cantImagenes], 1);
+        end
     end
-
     infoInstancia = cat(2, infoInstancia, [imgRight]);
     infoInstancia = cat(2, infoInstancia, [imgLeft]);
     
-    %Elegimo una imagen de a
+    %Elegimos una imagen de a
     imagenRight = imread(cat(2,'Imagenes/', vImg(imgRight,:)), 'jpg');
     imagenLeft = imread(cat(2,'Imagenes/', vImg(imgLeft,:)), 'jpg');
 
     barCoords = [[(middlePointX-60) (middlePointY-10) (middlePointX-20) (middlePointY+10)]; [(middlePointX+20) (middlePointY-10) (middlePointX+60) (middlePointY+10)]];
-    ALaIzquierda = randi([1,2], 1);
+    
+    if(imgRight > 16) 
+        ALaIzquierda = 1;
+    elseif(imgLeft > 16)
+        ALaIzquierda = 2;
+    else
+        ALaIzquierda = randi([1,2], 1);
+    end
+    
     infoInstancia = cat(2, infoInstancia, [ALaIzquierda]);
     % 
     % if (quienVaALaIzquierda == 1) 
@@ -108,27 +127,35 @@ while(counter < 1)
     %     imagenRight = imread(img1, 'jpg');
     % end
 
+    % Presentacion del punto de fijacion en el centro de la pantalla
+    
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen(wPtr, 'Flip');
 
+    % Dura 1 segundo
     tic
     while toc<1 %segundos
     ;
     end
 
     
-
+    % Presentación del Cue atencional periferico 
+    
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen('FillOval', wPtr, black, cueCoords(fila, :)); %Cue perfiferico a la izquierda; Usamos las coordenadas indicadas por fila (el numero random).
     Screen(wPtr, 'Flip');
 
+    % Dura 40 ms
+    
     tic
     while toc<0.04
     ;
     end
 
+    %Volvemos a presentar el punto de fijacion durante 60 ms
+    
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen(wPtr, 'Flip');
@@ -138,6 +165,8 @@ while(counter < 1)
     ;
     end
     
+    % Presentamos las caras durante 500mseg
+    
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('PutImage', wPtr, imagenLeft, [(quarterPointX-181)  (middlePointY-245) (quarterPointX+181) (middlePointY+245)]);
     Screen('PutImage', wPtr, imagenRight, [(3*quarterPointX-181)  (middlePointY-245) (3*quarterPointX+181) (middlePointY+245)]);
@@ -145,9 +174,11 @@ while(counter < 1)
     Screen(wPtr,'Flip');
 
     tic
-    while toc<0.1
+    while toc<0.25
     ;
     end
+    
+    %Volvemos a presentar el punto de fijacion durante 200ms
     
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
@@ -158,12 +189,16 @@ while(counter < 1)
         ;
     end
 
-    %Pantalla de la barra negra
+    % Presentamos la clave para que indique que genero habia en ese lado de la pantalla (barra negra) 
+    
     Screen('FillRect',wPtr,gray);  %Pintamos la pantalla de gris
     Screen('FillOval', wPtr, black, [(middlePointX-10) (middlePointY-10) (middlePointX+10) (middlePointY+10)]); %Circulo de fijacion en el centro de la pantalla
     Screen('FillRect', wPtr, black, barCoords(ALaIzquierda,:));
     Screen(wPtr,'Flip');
 
+    % dura 300 mseg la presentacion y es el tiempo en el que tiene que
+    % repsonder el sujeto
+    
     tic
     while toc<0.3
     ;
@@ -176,26 +211,49 @@ while(counter < 1)
 
         tic
         pressedButton = find(buttons);
-        infoInstancia = cat(2, infoInstancia, pressedButton);
-        
-        %%%%%TODO: AGREGAR REPUESTA ESPERADA AL INFO INSTANCIA
-        if infoInstancia(5) == 1) 
-            infoInstancia = cat(2, infoInstancia, correctAnswer(infoInstancia(4));
+        if(pressedButton == 1)
+            infoInstancia = cat(2, infoInstancia, 0);
+        elseif (pressedButton == 3)
+            infoInstancia = cat(2, infoInstancia, 1);
         else
-            infoInstancia = cat(2, infoInstancia, correctAnswer(infoInstancia(3));
+            infoInstancia = cat(2, infoInstancia, -1);
+        end
+        
+        if infoInstancia(5)
+           if (or(infoInstancia(4) <= 8,and(infoInstancia(4) >= 17, infoInstancia(4) <= 24)))
+               correctAnswer = 1;
+           else 
+               correctAnswer = 0;
+           end
+        else
+            if (or(infoInstancia(3) <= 8,and(infoInstancia(3) >= 17, infoInstancia(3) <= 24)))
+               correctAnswer = 1;
+           else 
+               correctAnswer = 0;   
+            end
+        end
+        %%%%%TODO: AGREGAR REPUESTA ESPERADA AL INFO INSTANCIA
+        if infoInstancia(5) == 1;
+            infoInstancia = cat(2, infoInstancia, correctAnswer);
+        else
+            infoInstancia = cat(2, infoInstancia, correctAnswer);
         end
         
         responseTime = toc;
         infoInstancia = cat(2, infoInstancia, responseTime);
     
-        infoInstancia
+        fullData = cat(1, fullData, infoInstancia);
         counter = counter + 1;
         
          tic
         while toc<1
         ;
         end
+        
+
 end
+
+fullData
 
 Screen('CloseAll');
 ShowCursor; 
