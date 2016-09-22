@@ -174,7 +174,7 @@ while(counter < 2)
     Screen(wPtr,'Flip');
 
     tic
-    while toc<0.25
+    while toc<1   %0.25
     ;
     end
     
