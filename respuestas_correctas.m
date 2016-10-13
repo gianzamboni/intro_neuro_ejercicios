@@ -1,114 +1,38 @@
-data = allData;
-goodAnswers = 0;
-badAnswers = 0;
-invalidAnswers = 0;
-dataSize = size(allData);
-    
-newColumna = [];
-    
-for inst = 1: dataSize(1) %nstancia desde 1 hasta cantidad de instancias
-    inst;
-    if data(inst,7) == -1
-        invalidAnswers = invalidAnswers + 1;
-        newColumna = cat(1, newColumna, 0); %Digo que la respuesta es invalida 
-    elseif data(inst,7) == data(inst,8)
-        goodAnswers = goodAnswers + 1;
-        newColumna = cat(1, newColumna, 1); %Digo que la respuesta es correcta
-    else
-        badAnswers = badAnswers + 1; 
-        newColumna = cat(1, newColumna, 2); %Digo que la respuesta es incorrecta
-    end
-end
+load('allData.mat');
 
-goodAnswers = goodAnswers/dataSize(1)*100;
-badAnswers = badAnswers/dataSize(1)*100;
-invalidAnswers = invalidAnswers/dataSize(1)*100;
+% [sujeto, sexo_sujeto, cue, imgD, imgI, responseCue, Rta, RtaEsperada, Tiempo ]
+							% sexo_sujeto = 0 mujer
+							%               1 hombre
+							% cue =  1 Izquierda
+							%        2 Neutral
+							%        3 Derecha
+							% responseCue =  1 Izquierda
+							%                2 Derecha
+							% Rta =          1 Botón izquierdo - mujer
+							%                3 Botón derecho - hombre
 
-figure;
-y = [invalidAnswers badAnswers goodAnswers];
-allAnswers = bar(y);
-title('Porcentaje de respuestas correctas, incorrectas e invalidas')
+                            
+newColumna = correctWrongInvalid(allData, 'Respuestas totales', true);
+allData = cat(2, allData, newColumna);
 
-data = cat(2, data, newColumna);
+%Esta es una matriz que solo tiene las filas que corresponde a respuestas correctas e incorrectas.
+data = allData( allData(:,10) == 1 | allData(:,10) == 2, :);
+lasDosSonNormales = (data(:,4) < 17) & (data(:,5) < 17); % Hay 1s donde las dos caras son normales
 
-data = data( data(:,10) == 1 | data(:,10) == 2, :);
-v = (data(:,4) < 17 & data(:,5) < 17);
-data = cat(2,data,v);
-k = find(v == 0);
+modifiedFaces = data(lasDosSonNormales == 0, :);  %Todas las filas con 1 cara modificada
+normalFaces = data(lasDosSonNormales == 1,:); %Todas las filas 2 con caras normales
 
-modifiedFaces = data(k, :);
-k = find(v == 1);
-normalFaces = data(k,:);
+correctWrongInvalid(modifiedFaces, 'Respuestas con caras modificadas', false);
+correctWrongInvalid(normalFaces, 'Respuestas con caras normales', false);
 
-modifiedFacesSize = size(modifiedFaces);
-goodAnswers = 0;
-badAnswers = 0;
-invalidAnswers = 0;
+errorPercentage(normalFaces,'Error con caras normales');
+errorPercentage(modifiedFaces,'Error con caras modificadas');
 
-for inst = 1: modifiedFacesSize(1) %nstancia desde 1 hasta cantidad de instancias
-    inst;
-    if data(inst,7) == -1
-        invalidAnswers = invalidAnswers + 1;
-        newColumna = cat(1, newColumna, 0); %Digo que la respuesta es invalida 
-    elseif data(inst,7) == data(inst,8)
-        goodAnswers = goodAnswers + 1;
-        newColumna = cat(1, newColumna, 1); %Digo que la respuesta es correcta
-    else
-        badAnswers = badAnswers + 1; 
-        newColumna = cat(1, newColumna, 2); %Digo que la respuesta es incorrecta
-    end
-end
+sujetosHombres = allData(allData(:,2) == 1);
+sujetosMujeres = allData(allData(:,2) == 0);
 
-goodAnswers = goodAnswers/dataSize(1)*100;
-badAnswers = badAnswers/dataSize(1)*100;
-invalidAnswers = invalidAnswers/dataSize(1)*100;
-
-figure;
-y = [invalidAnswers badAnswers goodAnswers]
-allAnswers = bar(y)
-title('Porcentaje de respuestas correctas, incorrectas e invalidas para trials con caras normales')
-
-normalFacesSize = size(normalFaces);
-goodAnswers = 0;
-badAnswers = 0;
-invalidAnswers = 0;
-
-
-for inst = 1: normalFacesSize(1) %nstancia desde 1 hasta cantidad de instancias
-    inst;
-    if data(inst,7) == -1
-        invalidAnswers = invalidAnswers + 1;
-        newColumna = cat(1, newColumna, 0); %Digo que la respuesta es invalida 
-    elseif data(inst,7) == data(inst,8)
-        goodAnswers = goodAnswers + 1;
-        newColumna = cat(1, newColumna, 1); %Digo que la respuesta es correcta
-    else
-        badAnswers = badAnswers + 1; 
-        newColumna = cat(1, newColumna, 2); %Digo que la respuesta es incorrecta
-    end
-end
-
-goodAnswers = goodAnswers/dataSize(1)*100;
-badAnswers = badAnswers/dataSize(1)*100;
-invalidAnswers = invalidAnswers/dataSize(1)*100;
-
-figure;
-y = [invalidAnswers badAnswers goodAnswers];
-allAnswers = bar(y);
-title('Porcentaje de respuestas correctas, incorrectas e invalidas con caras modificadas');
-
-v = ((normalFaces(:,3) == 1 & normalFaces(:,6) == 1) | (normalFaces(:,3) == 3 & normalFaces(:,6) == 2)) & normalFaces(:,10) == 2; %Filas validas
-v2 = normalFaces(:,3) == 2 & normalFaces(:,10) == 2; %Filas neutrales
-v3 = not(v) & not(v2) & normalFaces(:,10) == 2; %Filas invalidas
-
-cantErroresValidas = sum(v)/badAnswers*100;
-cantErroresNeutrales = sum(v2)/badAnswers*100;
-cantErroresInvalidas = sum(v3)/badAnswers*100;
-
-figure;
-y = [cantErroresValidas cantErroresNeutrales cantErroresInvalidas]
-bar(y);
-%%TODO: Eliminar filas con respuestas invalidas
+%correctWrongInvalid(sujetosHombres)
+%correctWrongInvalid(sujetosMujeres)
 
 % sexo_mujer_correctas = 0;
 % sexo_hombre_correctas = 0;
